@@ -6,6 +6,7 @@
                 'is-active':isActive
         }">
             <slot name="title">{{ title }} </slot>
+            <Icon icon="angle-right" class="header-angle" />
         </div>
         <!-- 内置Transition组件实现动画效果 -->
         <Transition name="slide" v-on="TransitionEvents">
@@ -25,6 +26,7 @@
 import {inject, computed} from 'vue'
 import type { CollapseItemProps} from './types';
 import {collapseContextKey} from './types'
+import Icon from '../Icon/Icon.vue'
 
 defineOptions({
     name:'VkCollapseItem'
