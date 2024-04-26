@@ -19,6 +19,7 @@ import type {TooltipProps,TooltipInstance} from './types'
 import {createPopper} from '@popperjs/core'
 import type {Instance} from '@popperjs/core'
 import useClickOutside from '@/hooks/useClickOutside'
+import {debounce} from 'lodash-es'
 
 defineOptions({
     name:'VkTooltip'
@@ -26,7 +27,9 @@ defineOptions({
 
 const props = withDefaults(defineProps<TooltipProps>(),{
     placement:'bottom',
-    transition:'fade'  //设置默认值
+    transition:'fade',  //设置默认值
+    openDelay: 0,
+    closeDelay: 0
 })
 
 const popperOptions = computed(()=>{
@@ -38,9 +41,10 @@ const popperOptions = computed(()=>{
 
 const isOpen =ref<boolean>(false)
 
-const togglePopper=()=>(
-    isOpen.value=!isOpen.value
-)
+const togglePopper=()=>{
+    if(isOpen.value) closeFinal()
+    else  openFinal()
+}
 
 const openCount = ref<number>(0)
 const closeCount = ref<number>(0)
@@ -51,7 +55,20 @@ const open=()=>{
 
 const close=()=>{
     isOpen.value=false
-     console.log(`closeCount ${++closeCount.value}`)
+    console.log(`closeCount ${++closeCount.value}`)
+}
+
+const openDebounce = debounce(open,props.openDelay)
+const closeDebounce = debounce(close,props.closeDelay)
+
+const openFinal =()=>{
+    closeDebounce.cancel()
+    openDebounce()
+}
+
+const closeFinal =()=>{
+    openDebounce.cancel()
+    closeDebounce()
 }
 
 const triggerNode = ref<HTMLElement>()
@@ -63,10 +80,6 @@ watch(isOpen,(newValue)=>{
         if(triggerNode.value && popperNode.value){
             popperInstance = createPopper(triggerNode.value,popperNode.value,popperOptions.value)
         }
-        else{
-        // newValue=false，则调用popperInstance?.destroy()来销毁已经存在的弹出框实例。
-        popperInstance?.destroy()
-    }
     }
 },{flush:'post'})
 //  需要满足if(triggerNode.value && popperNode.value) watch函数要在demo节点生成以后再进行调用:{flush:'post'}
@@ -81,8 +94,8 @@ const attachEvents=()=>{
         events['click'] = togglePopper
     }
     else{
-        events['mouseenter'] = open
-        outerevents['mouseleave'] = close
+        events['mouseenter'] = openFinal
+        outerevents['mouseleave'] = closeFinal
     }
 }
 // 1.添加手动事件的判断：如果不是手动触发，才绑定事件
@@ -101,7 +114,7 @@ const popperContainNode = ref<HTMLElement>()
 const handleClickOutside =()=>{
     //2.排除手动的情况
     if(props.trigger==='click' && isOpen.value && !props.manual){
-        close()
+        closeFinal()
     }
 }
 useClickOutside(popperContainNode,handleClickOutside)
@@ -124,8 +137,8 @@ onUnmounted(()=>{
 
 //4.方法暴露出去给App.vue使用
 defineExpose<TooltipInstance>({
-    'show':open,
-    'hide':close
+    'show':openFinal,
+    'hide':closeFinal
 })
 
 </script>
