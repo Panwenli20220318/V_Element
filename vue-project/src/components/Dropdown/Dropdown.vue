@@ -6,6 +6,8 @@
         :popperOptions="popperOptions"
         :openDelay="openDelay"
         :closeDelay="closeDelay"
+        :manual="manual"
+        @visible-change="visibleChange"
         ref="tooltipRef">
             <slot></slot>
             <template #content>
@@ -22,6 +24,7 @@
                             :id="`dropdown-item-${item.key}`"
                             @click="itemClick(item)"
                         >
+                            <!-- {{ item.label }} -->
                             <RenderVnode :vNode="item.label"></RenderVnode>
                         </li>
                     </template>
@@ -34,31 +37,38 @@
 
 <script setup lang="ts">
 import {ref} from 'vue'
-import type {Ref} from 'vue'
 import Tooltip from '../Tooltip/Tooltip.vue';
-import type {DropdownProps,MenuOption,DropdownInstance} from './types'
+import type {DropdownProps,DropdownEmits,MenuOption,DropdownInstance} from './types'
 import type {TooltipInstance} from '../Tooltip/types'
 import RenderVnode from '../Common/RenderVnode';
+
+defineOptions({
+  name: 'VkDropdown'
+})
 
 const props = withDefaults(defineProps<DropdownProps>(),{
     hideAfterClick:true
 }) 
+const emits = defineEmits<DropdownEmits>()
 
 //获取tooltipRef上的方法
-const tooltipRef= ref()  as Ref<TooltipInstance>
+const tooltipRef = ref<TooltipInstance | null>(null)
+
+const visibleChange = (e: boolean) => {
+  emits('visible-change', e)
+}
 
 //点击选项时，隐藏下拉列表
 const itemClick = (item:MenuOption)=>{
-  if (item.disabled) return 
-  else{
+    if(item.disabled) return 
+    emits('select', item)
     if(props.hideAfterClick) tooltipRef.value?.hide()
-  }
 }
 
 //接收Tooltip的方法暴露给App.vue
 defineExpose<DropdownInstance>({
-  show: tooltipRef.value?.show,
-  hide: tooltipRef.value?.hide
+  show: () => tooltipRef.value?.show(),
+  hide: () => tooltipRef.value?.hide()
 })
 
 </script>

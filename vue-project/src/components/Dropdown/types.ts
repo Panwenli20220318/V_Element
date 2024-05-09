@@ -8,6 +8,11 @@ export interface MenuOption {
     divided?: boolean; //分隔符
 }
 
+export interface DropdownEmits {
+    (e: 'visible-change', value: boolean): void;
+    (e: 'select', value: MenuOption): void;
+}
+
 export interface DropdownProps extends TooltipProps {
     menuOptions: MenuOption[],
     hideAfterClick?: boolean;  //点击某一项的时候，关闭选项栏

@@ -7,6 +7,7 @@
   --vk-message-close-hover-color: var(--vk-text-color-secondary);
 }
 .vk-message {
+  z-index: 999;
   width: fit-content;
   max-width: calc(100% - 32px);
   box-sizing: border-box;

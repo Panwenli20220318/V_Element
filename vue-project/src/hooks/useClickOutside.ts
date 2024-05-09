@@ -1,7 +1,7 @@
+//   自定义 Hook，用于检测点击事件是否发生在指定元素外部  
+
 import { onMounted, onUnmounted } from 'vue';
 import type { Ref } from 'vue';
-
-//   自定义 Hook，用于检测点击事件是否发生在指定元素外部  
 
 //   elementRef 对HTMLElement的引用，可能是undefined  
 //   callback 当点击发生在元素外部时调用的回调函数  

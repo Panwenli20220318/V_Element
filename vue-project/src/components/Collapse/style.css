@@ -33,6 +33,7 @@
   }
   &.is-active {
     border-bottom-color: transparent;
+    /* 选中时：按钮方向进行旋转 */
     .header-angle {
       transform: rotate(90deg);
     }

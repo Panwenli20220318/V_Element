@@ -11,6 +11,11 @@ export interface TooltipProps {
     closeDelay?: number
 }
 
+export interface TooltipEmits {
+    (e: 'visible-change', value: boolean): void;
+    (e: 'click-outside', value: boolean): void;
+}
+
 export interface TooltipInstance {
     show: () => void;
     hide: () => void
