@@ -12,9 +12,11 @@ const customRender = (option) => {
   return h('div', { className: 'xyz' }, [h('b', option.label), h('span', option.value)])
 }
 </script>
+
 <template>
   <Select v-model="test" placeholder="基础选择器，请选择" :options="options2" :renderLabel="customRender"/>
 </template>
+
 <style>
 .vk-select__menu-item, .xyz  {
   display: flex;

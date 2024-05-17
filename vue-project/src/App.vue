@@ -1,37 +1,62 @@
 <script setup>
-import { h, ref } from 'vue'
-import Dropdown from '@/components/Dropdown/Dropdown.vue'
+import { reactive, ref } from 'vue'
+// This starter template is using Vue 3 <script setup> SFCs
+// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
+import Form from '@/components/Form/Form.vue'
+import FormItem from '@/components/Form/FormItem.vue'
+import Input from '@/components/Input/Input.vue'
 import Button from '@/components/Button/Button.vue'
-const options = [
-  { key: 1, label: h('b', 'this is bold') },
-  { key: 2, label: 'item2', disabled: true },
-  { key: 3, label: 'item3', divided: true },
-  { key: 4, label: 'item4' }
-]
-const tooltipRef = ref()
-const open = () => {
-  tooltipRef.value?.show()
-  console.log('打开啦')
+const formRef = ref()
+const model = reactive({
+  email: '',
+  password: '',
+  confirmPwd: '',
+})
+const rules = {
+  email: [{ type: 'email', required: true, trigger: 'blur' },
+          { type: 'string', required: true, trigger: 'input' } ],
+  password: [{ type: 'string', required: true, trigger: 'blur', min: 3, max: 5 }],
+  confirmPwd: [{ type: 'string', required: true, trigger: 'blur' }, {
+    validator: (rule, value) => value === model.password, trigger: 'blur', message: '两个密码必须相同'
+  } ],
+  test: [{ type: 'string', required: true, trigger: 'blur' } ]
 }
-const close = () => {
-  tooltipRef.value?.hide()
-  console.log('关闭啦')
+
+const submit = async () => {
+  try {
+    await formRef.value.validate()
+    console.log('passed!')
+  } catch (e) {
+    console.log('the error', e)
+  }
+}
+const reset = () => {
+  formRef.value.resetFields()
 }
 </script>
+
 <template>
-  <div class="basic block">
-    <Dropdown 
-      placement="bottom" 
-      :menu-options="options"
-      trigger="click"
-      manual
-      ref="tooltipRef"
-    >
-      <Button> 菜单容器 </Button>
-    </Dropdown>
-    
-    <br/><br/>
-    <Button type="primary" @click="open"> 点击手动触发显示 </Button>
-    <Button type="danger" @click="close"> 点击手动触发隐藏 </Button>
-  </div>
+<div>
+  <Form :model="model" :rules="rules" ref="formRef">
+    <FormItem label="the email" prop="email">
+      <Input type="text" v-model="model.email"/>
+    </FormItem>
+    <FormItem label="the password" prop="password">
+      <Input type="password" v-model="model.password" />
+    </FormItem>
+    <FormItem prop="confirmPwd" label="confirm password">
+      <Input v-model="model.confirmPwd" type="password" />
+    </FormItem>
+
+    <div :style="{textAlign: 'center'}">
+      <Button type="primary" @click.prevent="submit">Submit</Button>
+      <Button @click.prevent="reset">Reset</Button>
+    </div>
+  </Form>
+  <p>
+    form value:
+    <pre>{{model}}</pre>
+  </p>
+
+</div>
 </template>

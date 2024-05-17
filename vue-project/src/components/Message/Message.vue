@@ -39,6 +39,10 @@ import Icon from '../Icon/Icon.vue'
 import { getLastBottomOffset } from './method'
 import  useEventLister  from '../../hooks/useEventLister'
 
+defineOptions({
+    name:'VkMessage',
+})
+
 const props = withDefaults(defineProps<MessageProps>(), {
   type: 'info',
   duration: 3000,
@@ -104,7 +108,7 @@ const close =()=>{
 
 //已经消失之后进行触发
 function destoryComponent(){
-  props.onDestroy()
+  props.onDestory()
 }
 
 //enter之后进行触发

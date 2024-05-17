@@ -15,5 +15,5 @@ const options2 = [
     placeholder="可以过滤的选择器，请输入" 
     :options="options2"
     filterable
-  />
+    ></Select>
 </template>

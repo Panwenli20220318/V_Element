@@ -16,7 +16,8 @@ export default defineConfig({
       },
     }),
     dts({
-      tsconfigPath: './tsconfig.build.json'
+      tsconfigPath: './tsconfig.build.json',
+      outDir: 'dist/types'
     })
   ],
   resolve: {
@@ -25,18 +26,16 @@ export default defineConfig({
     }
   },
   build: {
+    outDir: 'dist/es',
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'VElement',
-      fileName: 'v-element'
+      fileName: 'v-element',
+      formats: ['es']
     },
     rollupOptions: {
-      external: ['vue', '@fortawesome/fontawesome-svg-core', '@fortawesome/free-solid-svg-icons', '@fortawesome/vue-fontawesome'],
+      external: ['vue', '@fortawesome/fontawesome-svg-core', '@fortawesome/free-solid-svg-icons', '@fortawesome/vue-fontawesome', 'async-validator', '@popperjs/core', 'axios'],
       output: {
-        exports: 'named',
-        globals: {
-          vue: 'Vue'
-        },
         assetFileNames: (chunkInfo) => {
           if (chunkInfo.name === 'style.css') {
             return 'index.css'

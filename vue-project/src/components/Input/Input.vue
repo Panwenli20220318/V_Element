@@ -93,10 +93,11 @@
     </div>
 </template>
 <script setup lang="ts">
-import {ref,watch,computed, useAttrs,nextTick} from 'vue'
+import {ref,watch,computed, useAttrs,nextTick,inject} from 'vue'
 import type {Ref} from 'vue'
 import type {InputProps,InputEmits} from './types'
 import Icon from '../Icon/Icon.vue'
+import {formItemContextKey} from '../Form/types'
 
 defineOptions({
     name:'VkInput',
@@ -114,9 +115,11 @@ const emits = defineEmits<InputEmits>()
 const handleInput =()=>{
     emits('update:modelValue',innerValue.value)
     emits('input',innerValue.value)
+    runValidation('input')
 }
 const handleChange =()=>{
     emits('change',innerValue.value)
+    runValidation('change')
 }
 //外部值更新，本地值也要进行更新
 watch(()=>props.modelValue,(newValue)=>{
@@ -134,6 +137,7 @@ const handleFocus =(event:FocusEvent)=>{
 const handleBlur =(event:FocusEvent)=>{
     isFocus.value = false,
     emits('blur',event)
+    runValidation('blur')
 }
 const clear = ()=>{
     innerValue.value=''
@@ -160,6 +164,11 @@ const keepFocus =async()=>{
 } 
 
 defineExpose({
-    inputRef
+    ref:inputRef
 })
+
+const formItemContext = inject(formItemContextKey)
+const runValidation = (trigger?: string)=>{
+    formItemContext?.validate(trigger)
+}
 </script>

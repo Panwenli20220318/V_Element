@@ -1,10 +1,10 @@
-import './styles/index.css'
-
+import { createApp } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
-library.add(fas)
-
-import { createApp } from 'vue'
 import App from './App.vue'
 
-createApp(App).mount('#app')
+library.add(fas)
+import './styles/index.css'
+console.log(App.render?.toString())
+const app = createApp(App)
+app.mount('#app')

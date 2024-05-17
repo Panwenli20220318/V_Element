@@ -5,7 +5,7 @@ export interface MessageProps {
     duration?: number;  //关闭的时长
     showClose?: boolean; //是否出现关闭按钮
     type?: 'success' | 'info' | 'warning' | 'danger'
-    onDestroy: () => void;
+    onDestory: () => void;
     offset?: number
     id: string;
     transitionName?: string
@@ -16,6 +16,7 @@ export type CreateMessageProps = Omit<MessageProps, 'onDestroy' | 'id'>
 //这可能是为了在创建消息通知时不需要提供 onDestory prop，因为该 prop 可能在消息通知被实际创建或挂载到 DOM 时才需要被设置。
 
 export interface MessageContext {
+    destory(): unknown;
     id: string;
     vnode: VNode;
     vm: ComponentInternalInstance;

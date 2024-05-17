@@ -1,17 +1,19 @@
 import { render, h, shallowReactive } from 'vue'
 import type { CreateMessageProps, MessageContext } from './types'
 import MessageConstructor from './Message.vue'
+import useZIndex from '../../hooks/useZIndex'
 
 let seed = 1
 
 const instances: MessageContext[] = shallowReactive([])
 export const createMessage = (props: CreateMessageProps) => {
+    const { nextZIndex } = useZIndex()
     const id = `message_${seed++}`
     //创建dom节点
     const container = document.createElement('div')
 
     //1.通过这部可以实现销毁组件
-    const destroy = () => {
+    const destory = () => {
         //从数组中删除
         const idx = instances.findIndex(instance => instance.id === id)
         if (idx === -1) return
@@ -19,11 +21,20 @@ export const createMessage = (props: CreateMessageProps) => {
 
         render(null, container)
     }
+    // 手动调用删除，其实就是手动的调整组件中 visible 的值
+    // visible 是通过 expose 传出来的
+    const manualDestory = () => {
+        const instance = instances.find(instance => instance.id === id)
+        if (instance) {
+            instance.vm.exposed!.visible.value = false
+        }
+    }
     //2.包装 newProps ，添加这个函数，函数将在Message.vue中被调用
     const newProps = {
         ...props,
         id,
-        onDestroy: destroy
+        zIndex: nextZIndex(),
+        onDestory: destory
     }
     // 使用 h 函数创建一个虚拟节点 vnode，该虚拟节点表示 MessageConstructor 组件，并带有传入的 props。  
     const vnode = h(MessageConstructor, newProps)
@@ -40,7 +51,8 @@ export const createMessage = (props: CreateMessageProps) => {
         id,
         vnode,
         vm,
-        props: newProps
+        props: newProps,
+        destory: manualDestory
     }
     instances.push(instance)
 
@@ -60,4 +72,10 @@ export const getLastBottomOffset = (id: string) => {
         const prev = instances[idx - 1];
         return prev.vm.exposed!.bottomOffset.value
     }
+}
+
+export const closeAll = () => {
+    instances.forEach(instance => {
+        instance.destory()
+    })
 }

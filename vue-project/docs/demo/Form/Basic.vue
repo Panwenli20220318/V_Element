@@ -57,7 +57,3 @@ const reset = () => {
 
 </div>
 </template>
-
-<style>
-
-</style>
